@@ -14,6 +14,7 @@ import de.dis2023.data.TenancyContract;
 import de.dis2023.data.Person;
 import de.dis2023.data.Apartment;
 import de.dis2023.data.Contract;
+import org.hibernate.query.Query;
 
 /**
  *  Class for managing all database entities.
@@ -70,8 +71,12 @@ public class EstateService {
 
 		session.beginTransaction();
 		List<EstateAgent> agent;
-		agent = session.createQuery(
-				"from EstateAgent as estateagent where estateagent.login = login").list();
+
+
+		Query j = session.createQuery(
+				"from EstateAgent as estateagent where estateagent.login = ?1");
+		j.setParameter(1, login);
+		agent = j.list();
 		session.getTransaction().commit();
 		session.close();
 
@@ -223,8 +228,10 @@ public class EstateService {
 
 		Set<House> all = new HashSet<House>();
 		List<House> houseList;
-		houseList  = session.createQuery(
-				"from House where manager = manager").list() ;
+		Query j = session.createQuery(
+				"from House where manager = ?1");
+		j.setParameter(1, ea);
+		houseList = j.list();
 
 		for(House house:houseList){
 			all.add(house);
@@ -291,8 +298,10 @@ public class EstateService {
 
 		Set<Apartment> all = new HashSet<Apartment>();
 		List<Apartment> apartmentList;
-		apartmentList  = session.createQuery(
-				"FROM Apartment WHERE manager= manager" ).list() ;
+		Query j = session.createQuery(
+				"from Apartment where manager = ?1");
+		j.setParameter(1, ea);
+		apartmentList = j.list();
 
 		for(Apartment apartment:apartmentList){
 			all.add(apartment);
@@ -409,22 +418,24 @@ public class EstateService {
 		String id = String.valueOf(ea.getId());
 		Set<TenancyContract> all = new HashSet<TenancyContract>();
 		List<Integer> tenancyContractList;
-		tenancyContractList  = session.createQuery(
-				"select id from Apartment as apart  where apart.manager = manager").list() ;
-
+		Query j = session.createQuery(
+				"select id from Apartment as apart  where apart.manager = ?1");
+		j.setParameter(1, ea);
+		tenancyContractList = j.list();
 		session.getTransaction().commit();
 		session.close();
 
 		Session session2 = sessionFactory.openSession();
 		session2.beginTransaction();
-		List<TenancyContract> temp = null;
+		List<TenancyContract> temp;
 		for(Integer t:tenancyContractList){
-			temp = session2.createQuery(
-					"from TenancyContract where apartment = apartment").list();
-		}
-
-		for(TenancyContract con:temp){
-			all.add(con);
+			Query r = session2.createQuery(
+					"from TenancyContract where id = ?1");
+			r.setParameter(1, t);
+			temp = r.list();
+			for(TenancyContract con:temp){
+				all.add(con);
+			}
 		}
 
 		session2.getTransaction().commit();
@@ -446,22 +457,24 @@ public class EstateService {
 		String id = String.valueOf(ea.getId());
 		Set<PurchaseContract> all = new HashSet<PurchaseContract>();
 		List<Integer> tenancyContractList;
-		tenancyContractList  = session.createQuery(
-				"select id from House as house  where house.manager = manager").list() ;
-
+		Query j = session.createQuery(
+				"select id from House where manager = ?1");
+		j.setParameter(1, ea);
+		tenancyContractList = j.list();
 		session.getTransaction().commit();
 		session.close();
 
 		Session session2 = sessionFactory.openSession();
 		session2.beginTransaction();
-		List<PurchaseContract> temp = null;
-		for(Integer t:tenancyContractList){
-			temp = session2.createQuery(
-					"from PurchaseContract where house = house").list();
-		}
-
-		for(PurchaseContract con:temp){
-			all.add(con);
+		List<PurchaseContract> temp;
+		for(Integer t:tenancyContractList) {
+			Query r = session2.createQuery(
+					"from PurchaseContract where id = ?1");
+			r.setParameter(1, t);
+			temp = r.list();
+			for (PurchaseContract con : temp) {
+				all.add(con);
+			}
 		}
 
 		session2.getTransaction().commit();
@@ -515,13 +528,13 @@ public class EstateService {
 	 * @param tc the tenancy contract
 	 */
 	public void deleteTenancyContract(TenancyContract tc) {
-		Session session = sessionFactory.openSession();
+		Session session1 = sessionFactory.openSession();
 
-		session.beginTransaction();
+		session1.beginTransaction();
 
-		session.delete(tc);
-		session.getTransaction().commit();
-		session.close();
+		session1.delete(tc);
+		session1.getTransaction().commit();
+		session1.close();
 	}
 	
 	/**

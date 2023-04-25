@@ -18,14 +18,14 @@
         <union-subclass name="de.dis2023.data.PurchaseContract" table="purchasecontract">
             <property name="noOfInstallments" type="integer" column="noOfInstallments" />
             <property name="intrestRate" type="integer" column="intrestRate" />
-            <many-to-one name="house" class="de.dis2023.data.Estate" column="estateId" unique="true"  lazy="false" cascade="all"/>
+            <many-to-one name="house" class="de.dis2023.data.House" column="estateId" unique="true"  lazy="false" cascade="all"/>
         </union-subclass>
 
         <union-subclass name="de.dis2023.data.TenancyContract" table="tenancycontract">
             <property name="startDate" type="date" column="startDate" />
             <property name="duration" type="integer" column="duration" />
             <property name="additionalCosts" type="integer" column="additionalCosts" />
-            <many-to-one name="apartment" class="de.dis2023.data.Estate" column="estateId" unique="true"  lazy="false" cascade="all"/>
+            <many-to-one name="apartment" class="de.dis2023.data.Apartment" column="estateId" unique="true"  lazy="false" cascade="all"/>
         </union-subclass>
     </class>
 </hibernate-mapping>
